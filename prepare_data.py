@@ -1,13 +1,40 @@
 import pandas as pd
 import os
+import re
 
 ARTIFACTS_DIR = 'artifacts'
+
+def mask_url(url):
+    """Маскирует чувствительные данные в URL
+    
+    Заменяет:
+    - UUID и идентификаторы на ### только в URL содержащих 'oiv'
+    - Параметры с числовыми значениями на ###
+    - Даты в формате 2024-01-01 на ####-##-##
+    """
+    # Маскируем UUID в пути только если URL содержит 'oiv' (включая в регулярное выражение)
+    url = re.sub(r'(?=.*oiv).*/[0-9a-fA-F-]{8,}/', '/###/', url)
+    
+    # Всегда маскируем числовые параметры и даты
+    url = re.sub(r'\d{4}-\d{2}-\d{2}', '####-##-##', url)
+    url = re.sub(r'([?&][^=]+=)\d+', r'\1###', url)
+
+    # Маскируем хэши после # в URL вида aissd.mos.ru/socket/sockJs/iframe.html#
+    url = re.sub(r'(aissd\.mos\.ru/socket/sockJs/iframe\.html#)[a-zA-Z0-9-]+', r'\1_####', url)
+
+    # Маскируем параметры в /oib/auth-npa/internal/login?12= на ?##=
+    url = re.sub(r'(/oib/auth-npa/internal/login\?)\d+(=)', r'\1##\2', url)
+
+    return url
 
 def aggregate_by_hour(data):
     """Агрегирует данные по часу для каждого URL"""
     # Используем колонки из CSV: server_time и url_clear
     data['server_time'] = pd.to_datetime(data['server_time'])
     data['hour'] = data['server_time'].dt.floor('h')
+    
+    # Маскирование URL перед группировкой
+    data['url_clear'] = data['url_clear'].apply(mask_url)
     
     # Группировка по часу и URL
     hourly_stats = data.groupby(['hour', 'url_clear']).size().reset_index(name='request_count')
