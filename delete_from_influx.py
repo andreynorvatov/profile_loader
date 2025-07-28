@@ -2,8 +2,14 @@ from influxdb import InfluxDBClient
 import argparse
 
 # Параметры подключения к InfluxDB
-INFLUX_HOST = 'localhost'
+# INFLUX_HOST = 'localhost'
+# INFLUX_PORT = 8086
+# INFLUX_DATABASE = 'requests_data'
+
+INFLUX_HOST = '10.126.145.27'
 INFLUX_PORT = 8086
+INFLUX_USER = 'grafana'
+INFLUX_PASSWORD = 'uasdo8aerbar'
 INFLUX_DATABASE = 'requests_data'
 
 def delete_all_data():
@@ -12,15 +18,15 @@ def delete_all_data():
     client = InfluxDBClient(
         host=INFLUX_HOST,
         port=INFLUX_PORT,
-        # username=INFLUX_USER,
-        # password=INFLUX_PASSWORD
+        username=INFLUX_USER,
+        password=INFLUX_PASSWORD
     )
     
     client.switch_database(INFLUX_DATABASE)
     
-    # Удаление всех данных из measurement
+    # Удаление всех данных из measurement (без удаления самой measurement)
     print("Удаление всех данных...")
-    client.query('DROP MEASUREMENT "url_requests"')
+    client.query('DELETE FROM "url_requests"')
     
     print("Все данные удалены!")
     client.close()
@@ -31,8 +37,8 @@ def delete_by_date_range(start_date=None, end_date=None):
     client = InfluxDBClient(
         host=INFLUX_HOST,
         port=INFLUX_PORT,
-        # username=INFLUX_USER,
-        # password=INFLUX_PASSWORD
+        username=INFLUX_USER,
+        password=INFLUX_PASSWORD
     )
     
     client.switch_database(INFLUX_DATABASE)

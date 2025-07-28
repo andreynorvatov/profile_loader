@@ -19,11 +19,17 @@ def mask_url(url):
     url = re.sub(r'\d{4}-\d{2}-\d{2}', '####-##-##', url)
     url = re.sub(r'([?&][^=]+=)\d+', r'\1###', url)
 
+    # Маскируем короткие UUID/идентификаторы из 8-16 hex-символов
+    url = re.sub(r'(?<![0-9a-fA-F])[0-9a-fA-F]{8,16}(?![0-9a-fA-F])', '_####', url)
+
     # Маскируем хэши после # в URL вида aissd.mos.ru/socket/sockJs/iframe.html#
     url = re.sub(r'(aissd\.mos\.ru/socket/sockJs/iframe\.html#)[a-zA-Z0-9-]+', r'\1_####', url)
 
-    # Маскируем параметры в /oib/auth-npa/internal/login?12= на ?##=
-    url = re.sub(r'(/oib/auth-npa/internal/login\?)\d+(=)', r'\1##\2', url)
+    # # Маскируем параметры в /oib/auth-npa/internal/login?12= на ?##=
+    # url = re.sub(r'(/oib/auth-npa/internal/login\?)\d+(=)', r'\1##\2', url)
+
+    # Маскируем все числовые значения на #
+    url = re.sub(r'\d+', '#', url)
 
     return url
 

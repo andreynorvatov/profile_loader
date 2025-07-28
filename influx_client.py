@@ -1,10 +1,17 @@
 from influxdb import InfluxDBClient
 
 # Параметры подключения к InfluxDB
-INFLUX_HOST = 'localhost'
+# INFLUX_HOST = 'localhost'
+# INFLUX_PORT = 8086
+# # INFLUX_USER = 'admin'
+# # INFLUX_PASSWORD = 'admin'
+# INFLUX_DATABASE = 'requests_data'
+
+
+INFLUX_HOST = '10.126.145.27'
 INFLUX_PORT = 8086
-# INFLUX_USER = 'admin'
-# INFLUX_PASSWORD = 'admin'
+INFLUX_USER = 'grafana'
+INFLUX_PASSWORD = 'uasdo8aerbar'
 INFLUX_DATABASE = 'requests_data'
 
 class InfluxDBClientWrapper:
@@ -20,8 +27,8 @@ class InfluxDBClientWrapper:
         self.client = InfluxDBClient(
             host=self.host,
             port=self.port,
-            # username=INFLUX_USER,
-            # password=INFLUX_PASSWORD
+            username=INFLUX_USER,
+            password=INFLUX_PASSWORD
         )
         
         # # Создание базы данных если не существует
