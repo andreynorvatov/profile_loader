@@ -1,18 +1,21 @@
 from influxdb import InfluxDBClient
+import os
+from dotenv import load_dotenv
+
+
+# Загрузка переменных окружения из .env файла
+load_dotenv()
 
 # Параметры подключения к InfluxDB
 # INFLUX_HOST = 'localhost'
 # INFLUX_PORT = 8086
-# # INFLUX_USER = 'admin'
-# # INFLUX_PASSWORD = 'admin'
 # INFLUX_DATABASE = 'requests_data'
-
 
 INFLUX_HOST = '10.126.145.27'
 INFLUX_PORT = 8086
-INFLUX_USER = 'grafana'
-INFLUX_PASSWORD = 'uasdo8aerbar'
 INFLUX_DATABASE = 'requests_data'
+INFLUX_USER = os.getenv('INFLUX_USER')
+INFLUX_PASSWORD = os.getenv('INFLUX_PASSWORD')
 
 class InfluxDBClientWrapper:
     def __init__(self, host=INFLUX_HOST, port=INFLUX_PORT, database=INFLUX_DATABASE):

@@ -1,16 +1,23 @@
 from influxdb import InfluxDBClient
 import argparse
+import os
+from dotenv import load_dotenv
 
 # Параметры подключения к InfluxDB
 # INFLUX_HOST = 'localhost'
 # INFLUX_PORT = 8086
 # INFLUX_DATABASE = 'requests_data'
 
+# Загрузка переменных окружения из .env файла
+load_dotenv()
+
+
 INFLUX_HOST = '10.126.145.27'
 INFLUX_PORT = 8086
-INFLUX_USER = 'grafana'
-INFLUX_PASSWORD = 'uasdo8aerbar'
 INFLUX_DATABASE = 'requests_data'
+INFLUX_USER = os.getenv('INFLUX_USER')
+INFLUX_PASSWORD = os.getenv('INFLUX_PASSWORD')
+
 
 def delete_all_data():
     """Удаляет все данные из базы"""
