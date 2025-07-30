@@ -1,5 +1,7 @@
 import pandas as pd
 import re
+from nginx_aggregate_hourly import mask_url
+
 
 def read_csv_file(file_path):
     """Читает CSV файл и возвращает DataFrame с колонкой source."""
@@ -42,17 +44,20 @@ def filter_by_keywords(df, keywords):
 def filter_requests(df):
     """Фильтрует DataFrame, удаляя строки по заданным условиям."""
     # Удаляем строки, заканчивающиеся на ".js" или ".css", либо начинающиеся с "/socket/sockJs/"
-    mask = ~df['request_uri'].str.endswith(('.js', '.css', '.png', '.json', '.woff', '.svg', '.jpg', '.ico')) & ~df['request_uri'].str.startswith('/socket/sockJs/')
+    mask = (
+        ~df['request_uri'].astype(str).str.endswith(('.js', '.css', '.png', '.json', '.woff', '.svg', '.jpg', '.ico', '/websocket')) &
+        ~df['request_uri'].astype(str).str.startswith('/socket/sockJs/')
+    )
     return df[mask]
 
-def mask_url(url):
-    """Маскирует URL, заменяя все числовые идентификаторы на {id}."""
-    if pd.isna(url):
-        return ''
-    url = str(url)
-    url = re.sub(r'\b\d+\b', '{id}', url)
-    url = re.sub(r'\b[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}\b', '{uuid}', url, flags=re.IGNORECASE)
-    return url
+# def mask_url(url):
+#     """Маскирует URL, заменяя все числовые идентификаторы на {id}."""
+#     if pd.isna(url):
+#         return ''
+#     url = str(url)
+#     url = re.sub(r'\b\d+\b', '{id}', url)
+#     url = re.sub(r'\b[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}\b', '{uuid}', url, flags=re.IGNORECASE)
+#     return url
 
 def aggregate_hourly(df):
     """

@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import re
+import pandas as pd
 
 ARTIFACTS_DIR = 'artifacts'
 
@@ -13,8 +14,13 @@ def mask_url(url):
     - Даты в формате 2024-01-01 на ####-##-##
     """
 
+    if pd.isna(url):
+        return ''
+    url = str(url)
     # Маскируем конкретный паттерн для ticket=ST-...-c0b27e1c60e6
-    url = re.sub(r'ticket=ST-\d+-[A-Za-z0-9-]+-[a-f0-9]{12}', 'ticket={ticket_id}', url)
+    # url = re.sub(r'ticket=ST-\d+-[A-Za-z0-9-]+-[a-f0-9]{12}', 'ticket={ticket_id}', url)
+    url = re.sub(r'ticket=ST-([^,]+)', 'ticket={ticket_id}', url)
+    url = re.sub(r'user-last-activity/ping/([^,]+)', 'user-last-activity/ping/{ping_id}', url)
     #
     # # Маскируем URL-encoded последовательности (и в виде %XX и #XX)
     url = re.sub(r'criteria=([^,]+)', 'criteria={url_encoded_data}', url)
@@ -61,15 +67,12 @@ def mask_url(url):
     # URL-encoded
     url = re.sub(r'%[0-9A-F]{2}(?:%[0-9A-F]{2})+', '{url_encoded_data}', url)
 
-    # Маскируем UUID и идентификаторы на #
+    # Маскируем UUID и идентификаторы
     url = re.sub(r'[0-9a-fA-F-]{36}', '{uuid}', url)
     url = re.sub(r'(?<=[/_-])\d+(?=[/_-]|$)', '{uuid}', url)
 
-    # Маскируем все цифры на #
+    # Маскируем все цифры
     url = re.sub(r'\d+', '{num}', url)
-
-
-
     
     return url
 
