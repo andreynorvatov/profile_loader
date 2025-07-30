@@ -50,14 +50,6 @@ def filter_requests(df):
     )
     return df[mask]
 
-# def mask_url(url):
-#     """Маскирует URL, заменяя все числовые идентификаторы на {id}."""
-#     if pd.isna(url):
-#         return ''
-#     url = str(url)
-#     url = re.sub(r'\b\d+\b', '{id}', url)
-#     url = re.sub(r'\b[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}\b', '{uuid}', url, flags=re.IGNORECASE)
-#     return url
 
 def aggregate_hourly(df):
     """

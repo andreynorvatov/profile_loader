@@ -21,6 +21,8 @@ def mask_url(url):
     # url = re.sub(r'ticket=ST-\d+-[A-Za-z0-9-]+-[a-f0-9]{12}', 'ticket={ticket_id}', url)
     url = re.sub(r'ticket=ST-([^,]+)', 'ticket={ticket_id}', url)
     url = re.sub(r'user-last-activity/ping/([^,]+)', 'user-last-activity/ping/{ping_id}', url)
+    url = re.sub(r'JWT-AUTH-TOKEN=([^,]+)', 'JWT-AUTH-TOKEN={token}', url)
+    url = re.sub(r'tokenId=([^&]+)', 'tokenId={token}', url)
     #
     # # Маскируем URL-encoded последовательности (и в виде %XX и #XX)
     url = re.sub(r'criteria=([^,]+)', 'criteria={url_encoded_data}', url)
