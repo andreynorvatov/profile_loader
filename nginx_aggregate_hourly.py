@@ -34,6 +34,11 @@ def mask_url(url):
     # Маскируем конкретный паттерн для /aissd-access/login?service=
     url = re.sub(r'/npa/api/dashboard/search/fulltext\?text=(\d+)', '/npa/api/dashboard/search/fulltext?text={id}', url)
 
+    # Маскируем конкретный паттерн для /oib/auth-npa/internal/login
+    url = re.sub(r'/oib/auth-npa/internal/login([^,]+)', '/oib/auth-npa/internal/login{data}', url)
+
+    url = re.sub(r'/npa/api/principals/switch-to-user/([^/?]+)', '/npa/api/principals/switch-to-user/{user}', url)
+
     # Маскируем конкретный паттерн
     url = re.sub(r'documentPackageId=(\d+)', 'documentPackageId={id}', url)
     url = re.sub(r'pointId=(\d+)', 'pointId={id}', url)
@@ -69,6 +74,13 @@ def mask_url(url):
     return url
 
 
+def filter_requests(df):
+    """Фильтрует DataFrame, удаляя строки по заданным условиям."""
+    # Удаляем строки, заканчивающиеся на ".js" или ".css", либо начинающиеся с "/socket/sockJs/"
+    mask = ~df['request'].str.endswith(('.js', '.css', '.png', '.json', '.woff', '.svg', '.jpg', '.ico')) & ~df['request'].str.startswith('/socket/sockJs/')
+    return df[mask]
+
+
 def prepare_hourly_data(input_file, output_file=None):
     """Агрегирует данные из CSV файла по часам по полям timestamp, request_method, request."""
     
@@ -83,6 +95,9 @@ def prepare_hourly_data(input_file, output_file=None):
     except Exception as e:
         print(f"Ошибка при чтении CSV: {e}")
         return None
+
+    # Применение фильтрации
+    df = filter_requests(df)
     
     # Преобразование timestamp в datetime
     df['timestamp'] = pd.to_datetime(df['timestamp'])
