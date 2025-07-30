@@ -1,4 +1,6 @@
-from prepare_data import prepare_hourly_data, create_influx_points, CSV_FILE
+# from prepare_data import prepare_hourly_data, create_influx_points, CSV_FILE
+from nginx_aggregate_hourly import prepare_hourly_data, create_influx_points, CSV_FILE
+
 from influx_client import InfluxDBClientWrapper
 
 def main():

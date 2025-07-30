@@ -17,7 +17,8 @@ INFLUX_PORT = 8086
 INFLUX_DATABASE = 'requests_data'
 INFLUX_USER = os.getenv('INFLUX_USER')
 INFLUX_PASSWORD = os.getenv('INFLUX_PASSWORD')
-MEASUREMENT = "url_requests"
+# MEASUREMENT = "url_requests"
+MEASUREMENT = "nginx_requests"
 
 def delete_all_data():
     """Удаляет все данные из базы"""
