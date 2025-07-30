@@ -17,7 +17,7 @@ INFLUX_PORT = 8086
 INFLUX_DATABASE = 'requests_data'
 INFLUX_USER = os.getenv('INFLUX_USER')
 INFLUX_PASSWORD = os.getenv('INFLUX_PASSWORD')
-
+MEASUREMENT = "url_requests"
 
 def delete_all_data():
     """Удаляет все данные из базы"""
@@ -33,7 +33,7 @@ def delete_all_data():
     
     # Удаление всех данных из measurement (без удаления самой measurement)
     print("Удаление всех данных...")
-    client.query('DELETE FROM "url_requests"')
+    client.query(f'DELETE FROM "{MEASUREMENT}"')
     
     print("Все данные удалены!")
     client.close()
@@ -60,7 +60,7 @@ def delete_by_date_range(start_date=None, end_date=None):
         where_clause = f"WHERE time <= '{end_date}'"
     
     # Удаление данных
-    query = f'DELETE FROM "url_requests" {where_clause}'
+    query = f'DELETE FROM "{MEASUREMENT}" {where_clause}'
     print(f"Выполнение запроса: {query}")
     client.query(query)
     
