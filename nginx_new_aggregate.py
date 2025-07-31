@@ -109,15 +109,20 @@ def main():
     )
     print("\nАгрегированные данные по часу сохранены в artifacts/hourly_aggregated.csv")
 
-    # Шаг 5: Сбор уникальных URL из агрегированного df
-    unique_urls = df_hourly['url'].drop_duplicates().sort_values()
-    unique_urls.to_csv(
+    # Шаг 5: Сбор уникальных URL и их количества запросов
+    url_counts = (
+        df_hourly.groupby('url')['count']
+        .sum()
+        .reset_index(name='total_requests')
+        .sort_values(by='url')
+    )
+    url_counts.to_csv(
         'artifacts/unique_urls.csv',
         sep=';',
-        index=False,
-        header=['url']
+        decimal=',',
+        index=False
     )
-    print("\nУникальные URL сохранены в artifacts/unique_urls.csv")
+    print("\nУникальные URL и количество запросов сохранены в artifacts/unique_urls.csv")
 
     # Шаг 6: Сбор статистики по Import и Export (для определения размера файлов)
     df_import = filter_by_keywords(df_filtered, ['import', 'export'])
