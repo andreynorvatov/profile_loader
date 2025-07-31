@@ -84,20 +84,22 @@ def count_unique_sources(df):
 def main():
     file_path = 'data/nginx_row_data.csv'
     df = read_csv_file(file_path)
-    # Сначала считаем уникальные значения
+
+    # Шаг 1: Подсчет уникальных значений source
     sources_table = count_unique_sources(df)
     print("Таблица уникальных значений source и их количество (до фильтрации):")
     print(sources_table)
-    # Потом фильтруем по источнику (sources)
+
+    # Шаг 2: Фильтрация по источнику (sources)
     df_filtered = filter_sources(df)
     sources_table_filtered = count_unique_sources(df_filtered)
     print("\nТаблица уникальных значений source и их количество (после фильтрации):")
     print(sources_table_filtered)
 
-    # Применение фильтрации по request
+    # Шаг 3: Фильтрация по запросам (requests)
     df_filtered = filter_requests(df_filtered)
 
-    # Агрегация по часу
+    # Шаг 4: Агрегация по часу
     df_hourly = aggregate_hourly(df_filtered)
     df_hourly.to_csv(
         'artifacts/hourly_aggregated.csv',
@@ -106,7 +108,18 @@ def main():
         index=False
     )
     print("\nАгрегированные данные по часу сохранены в artifacts/hourly_aggregated.csv")
-    # Шаг 3: фильтруем по подстроке 'import' и 'export' в request_uri
+
+    # Шаг 5: Сбор уникальных URL из агрегированного df
+    unique_urls = df_hourly['url'].drop_duplicates().sort_values()
+    unique_urls.to_csv(
+        'artifacts/unique_urls.csv',
+        sep=';',
+        index=False,
+        header=['url']
+    )
+    print("\nУникальные URL сохранены в artifacts/unique_urls.csv")
+
+    # Шаг 6: Сбор статистики по Import и Export (для определения размера файлов)
     df_import = filter_by_keywords(df_filtered, ['import', 'export'])
     print("\nТаблица import/export (только строки с 'import' или 'export' в request_uri) - Done")
     # Явно задаем тип decimal для указанных колонок
