@@ -1,6 +1,6 @@
 import pandas as pd
 import re
-from nginx_aggregate_hourly import mask_url
+from nginx_old_aggregate import mask_url
 
 
 def read_csv_file(file_path):
