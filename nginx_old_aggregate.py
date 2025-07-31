@@ -30,7 +30,6 @@ def mask_url(url: str) -> str:
     url = re.sub(r'employeeId=(\d+)', 'employeeId={id}', url)
     url = re.sub(r'userId=(\d+)', 'userId={id}', url)
     url = re.sub(r'version=(\d+)', 'version={num}', url)
-    # url = re.sub(r'user-send-activity&_=(\d+)', 'user-send-activity&_={num}', url)
     url = re.sub(r'&_=(\d+)', '&_={num}', url)
     url = re.sub(r'folderId=(\d+)', 'folderId={num}', url)
     url = re.sub(r'document_package_id=(\d+)', 'document_package_id={num}', url)
@@ -54,14 +53,11 @@ def mask_url(url: str) -> str:
     url = re.sub(r'lastName=[^&]+', 'lastName={data}', url)
     url = re.sub(r'middleName=[^&]+', 'middleName={data}', url)
     url = re.sub(r'changedSince=[^&]+', 'changedSince={data}', url)
-    # url = re.sub(r'/dashboard/search/by-document\?payload=[^&]+', '/dashboard/search/by-document?payload={payload}', url)
     url = re.sub(r'payload=[^&]+', 'payload={payload}', url)
     url = re.sub(r'dashboard/search/by-parameter\?packageName=[^&]+', 'dashboard/search/by-parameter?packageName={name}', url)
     url = re.sub(r'dashboard/search/by-parameter\?attachmentName=[^&]+', 'dashboard/search/by-parameter?attachmentName={name}', url)
-    # url = re.sub(r'dashboard/search/by-parameter\?registrationNumber=[^&]+', 'dashboard/search/by-parameter?registrationNumber={num}', url)
     url = re.sub(r'registrationNumber=[^&]+', 'registrationNumber={num}', url)
     url = re.sub(r'packageDescription=[^&]+', 'packageDescription={name}', url)
-    # url = re.sub(r'dashboard/search/folder\?folderId=[^&]+', 'dashboard/search/folder/folderId={id}', url)
     url = re.sub(r'type=governmentResolution&stage=negotiation&name=[^&]+', 'type=governmentResolution&stage=negotiation&name={name}', url)
     url = re.sub(r'document/find\?name=[^&]+', 'document/find?name={name}', url)
     url = re.sub(r'searchParam=[^&]+', 'searchParam={name}', url)
@@ -72,6 +68,8 @@ def mask_url(url: str) -> str:
     url = re.sub(r'endDate=[^&]+', 'endDate={date}', url)
     url = re.sub(r'TARGET=[^&]+', 'TARGET={url}', url)
     url = re.sub(r'parent=[^&]+', 'parent={id}', url)
+    url = re.sub(r'dashboard/search/by-document\?name=[^&]+', 'dashboard/search/by-document?name={id}', url)
+    url = re.sub(r'patronymic=[^&]+', 'patronymic={data}', url)
 
     url = re.sub(r'ticket=ST-([^,]+)', 'ticket={id}', url)
     url = re.sub(r'criteria=([^,]+)', 'criteria={url_encoded_data}', url)
@@ -85,8 +83,10 @@ def mask_url(url: str) -> str:
     url = re.sub(r'JWT-AUTH-TOKEN=([^,]+)', 'JWT-AUTH-TOKEN={token}', url)
     url = re.sub(r'storageId=internal&service=([^,]+)', 'storageId=internal&service={data}', url)
     url = re.sub(r'searchText=([^,]+)', 'searchText={data}', url)
+    url = re.sub(r'templateTypeId=([^,]+)', 'templateTypeId={id}', url)
 
-    url = re.sub(r'(?:[?&]name=)([^&]+)', '&name={data}', url)
+
+    url = re.sub(r'name=([^&]*%[0-9A-Fa-f]{2}[^&]*)', 'name={data}', url)
     url = re.sub(r'Select3/([^?]+)', 'Select3/{data}', url)
 
 
