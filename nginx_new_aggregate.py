@@ -124,6 +124,14 @@ def main():
     )
     print("\nУникальные URL и количество запросов сохранены в artifacts/unique_urls.csv")
 
+    # Запись итогового DataFrame в Excel
+    url_counts.to_excel(
+        'artifacts/unique_urls.xlsx',
+        sheet_name='unique_urls',
+        index=False
+    )
+    print("\nИтоговый DataFrame сохранён в Excel: artifacts/unique_urls.xlsx")
+
     # Шаг 6: Сбор статистики по Import и Export (для определения размера файлов)
     df_import = filter_by_keywords(df_filtered, ['import', 'export'])
     print("\nТаблица import/export (только строки с 'import' или 'export' в request_uri) - Done")
