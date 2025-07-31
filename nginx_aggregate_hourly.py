@@ -5,76 +5,67 @@ import pandas as pd
 
 ARTIFACTS_DIR = 'artifacts'
 
-def mask_url(url):
-    """Маскирует чувствительные данные в URL
-
-    Заменяет:
-    - UUID и идентификаторы на ### только в URL содержащих 'oiv'
-    - Параметры с числовыми значениями на ###
-    - Даты в формате 2024-01-01 на ####-##-##
-    """
-
+def mask_url(url: str) -> str:
+    """Маскирует чувствительные данные в URL одним регулярным выражением."""
     if pd.isna(url):
         return ''
     url = str(url)
-    # Маскируем конкретный паттерн для ticket=ST-...-c0b27e1c60e6
-    # url = re.sub(r'ticket=ST-\d+-[A-Za-z0-9-]+-[a-f0-9]{12}', 'ticket={ticket_id}', url)
-    url = re.sub(r'ticket=ST-([^,]+)', 'ticket={ticket_id}', url)
-    url = re.sub(r'user-last-activity/ping/([^,]+)', 'user-last-activity/ping/{ping_id}', url)
-    url = re.sub(r'JWT-AUTH-TOKEN=([^,]+)', 'JWT-AUTH-TOKEN={token}', url)
-    url = re.sub(r'tokenId=([^&]+)', 'tokenId={token}', url)
-    #
-    # # Маскируем URL-encoded последовательности (и в виде %XX и #XX)
-    url = re.sub(r'criteria=([^,]+)', 'criteria={url_encoded_data}', url)
-
-    # Маскируем конкретный паттерн для /auth/login?return_uri=
-    url = re.sub(r'return_uri=([^,]+)', 'return_uri={return_uri}', url)
-
-    # Маскируем конкретный паттерн для /ext-api/mka2/view?number=
-    url = re.sub(r'ext-api/mka2/view\?number=([^,]+)', 'ext-api/mka2/view?number={number}', url)
-
-    # Маскируем конкретный паттерн для /aissd-access/login?service=
-    url = re.sub(r'/aissd-access/login\?service=([^,]+)', '/aissd-access/login?service={service}', url)
-
-    # Маскируем конкретный паттерн для /aissd-access/recovery-password?service=
-    url = re.sub(r'/aissd-access/recovery-password\?service=([^,]+)', '/aissd-access/recovery-password?service={service}', url)
-
-    # Маскируем конкретный паттерн для /aissd-access/login?service=
-    url = re.sub(r'/npa/api/dashboard/search/fulltext\?text=(\d+)', '/npa/api/dashboard/search/fulltext?text={id}', url)
-
-    # Маскируем конкретный паттерн для /oib/auth-npa/internal/login
-    url = re.sub(r'/oib/auth-npa/internal/login([^,]+)', '/oib/auth-npa/internal/login{data}', url)
 
     url = re.sub(r'/npa/api/principals/switch-to-user/([^/?]+)', '/npa/api/principals/switch-to-user/{user}', url)
 
-    # Маскируем конкретный паттерн
+    url = re.sub(r'/npa/api/dashboard/search/fulltext\?text=(\d+)', '/npa/api/dashboard/search/fulltext?text={id}', url)
     url = re.sub(r'documentPackageId=(\d+)', 'documentPackageId={id}', url)
     url = re.sub(r'pointId=(\d+)', 'pointId={id}', url)
     url = re.sub(r'previousPointId=(\d+)', 'previousPointId={id}', url)
     url = re.sub(r'documentTypeId=(\d+)', 'documentTypeId={id}', url)
+    url = re.sub(r'agreement-route-user-phase-template/for-document-package/(\d+)', 'agreement-route-user-phase-template/for-document-package/{num}', url)
+    url = re.sub(r'/documents/route/(\d+)', '/documents/route/{num}', url)
+    url = re.sub(r'track_activity=false&_=(\d+)', 'track_activity=false&_={num}', url)
+    url = re.sub(r'agreements/by-document-package/(\d+)', 'agreements/by-document-package/{num}', url)
+
+    url = re.sub(r'tokenId=([^&]+)', 'tokenId={token}', url)
     url = re.sub(r'documentPackageNumber=[^&]+', 'documentPackageNumber={number}', url)
     url = re.sub(r'organizations=[^&]+', 'organizations={numbers_list}', url)
     url = re.sub(r'revisionDate=[^&]+', 'revisionDate={date}', url)
     url = re.sub(r'revisionDate=[^&]+', 'revisionDate={date}', url)
     url = re.sub(r'compareRevisionDate=[^&]+', 'compareRevisionDate={date}', url)
     url = re.sub(r'last_name=[^&]+', 'last_name={data}', url)
+    url = re.sub(r'changedSince=[^&]+', 'changedSince={data}', url)
+    url = re.sub(r'/dashboard/search/by-document\?payload=[^&]+', '/dashboard/search/by-document?payload={payload}', url)
+    url = re.sub(r'dashboard/search/by-parameter\?packageName=[^&]+', 'dashboard/search/by-parameter?packageName={package_name}', url)
+    url = re.sub(r'dashboard/search/by-parameter\?registrationNumber=[^&]+', 'dashboard/search/by-parameter?registrationNumber={reg_num}', url)
+    url = re.sub(r'dashboard/search/folder\?folderId=[^&]+', 'dashboard/search/folder\folderId={id}', url)
 
-    # Маскируем даты в ISO формате с URL-encoded символами
+    url = re.sub(r'ticket=ST-([^,]+)', 'ticket={ticket_id}', url)
+    url = re.sub(r'criteria=([^,]+)', 'criteria={url_encoded_data}', url)
+    url = re.sub(r'return_uri=([^,]+)', 'return_uri={return_uri}', url)
+    url = re.sub(r'ext-api/mka2/view\?number=([^,]+)', 'ext-api/mka2/view?number={number}', url)
+    url = re.sub(r'/oib/auth-npa/internal/login([^,]+)', '/oib/auth-npa/internal/login{data}', url)
+    url = re.sub(r'/aissd-access/login\?service=([^,]+)', '/aissd-access/login?service={service}', url)
+    url = re.sub(r'/aissd-access/recovery-password\?service=([^,]+)', '/aissd-access/recovery-password?service={service}', url)
+    url = re.sub(r'/main/dashboard\?search=([^,]+)', '/main/dashboard?search={data}', url)
+    url = re.sub(r'user-last-activity/ping/([^,]+)', 'user-last-activity/ping/{ping_id}', url)
+    url = re.sub(r'JWT-AUTH-TOKEN=([^,]+)', 'JWT-AUTH-TOKEN={token}', url)
+
+
+
+    # Общие
+    # ISO формате с URL-encoded символами
     url = re.sub(r'\d{4}-\d{2}-\d{2}T\d{2}%3A\d{2}%3A\d{2}\.\d{3}%2B\d{2}%3A\d{2}', '{date}', url)
-    # Маскируем даты в формате 2024-03-24T05:26:18.792Z
+    # Даты в формате 2024-03-24T05:26:18.792Z
     url = re.sub(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z', '{date}', url)
-    # Маскируем даты
+    # Даты
     url = re.sub(r'\d{4}-\d{2}-\d{2}', '{date}', url)
 
     # URL-encoded
     url = re.sub(r'%[0-9A-F]{2}(?:%[0-9A-F]{2})+', '{url_encoded_data}', url)
 
-    # Маскируем UUID и идентификаторы
+    # UUID и идентификаторы
     url = re.sub(r'[0-9a-fA-F-]{36}', '{uuid}', url)
     url = re.sub(r'(?<=[/_-])\d+(?=[/_-]|$)', '{uuid}', url)
 
-    # Маскируем все цифры
-    url = re.sub(r'\d+', '{num}', url)
+    # Все цифры
+    # url = re.sub(r'\d+', '{num}', url)
     
     return url
 
