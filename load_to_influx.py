@@ -1,5 +1,6 @@
 # from prepare_data import prepare_hourly_data, create_influx_points, CSV_FILE
 from nginx_old_aggregate import prepare_hourly_data, create_influx_points, CSV_FILE
+from nginx_new_aggregate import prepare_hourly_data, create_influx_points, CSV_FILE
 
 from influx_client import InfluxDBClientWrapper
 

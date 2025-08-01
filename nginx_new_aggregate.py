@@ -81,9 +81,15 @@ def count_unique_sources(df):
     """Возвращает таблицу с уникальными значениями и их количеством."""
     return df['source'].value_counts()
 
+def create_influx_points(hourly_data):
+    pass
+
+
+CSV_FILE = 'data/nginx_row_data.csv'
+
 def main():
-    file_path = 'data/nginx_row_data.csv'
-    df = read_csv_file(file_path)
+
+    df = read_csv_file(CSV_FILE)
 
     # Шаг 1: Подсчет уникальных значений source
     sources_table = count_unique_sources(df)
