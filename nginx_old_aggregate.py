@@ -70,6 +70,7 @@ def mask_url(url: str) -> str:
     url = re.sub(r'parent=[^&]+', 'parent={id}', url)
     url = re.sub(r'dashboard/search/by-document\?name=[^&]+', 'dashboard/search/by-document?name={id}', url)
     url = re.sub(r'patronymic=[^&]+', 'patronymic={data}', url)
+    url = re.sub(r'ignore=[^&]+', 'ignore={num}', url)
 
     url = re.sub(r'ticket=ST-([^,]+)', 'ticket={id}', url)
     url = re.sub(r'criteria=([^,]+)', 'criteria={url_encoded_data}', url)
