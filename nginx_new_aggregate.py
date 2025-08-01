@@ -51,13 +51,15 @@ def filter_requests(df):
     return df[mask]
 
 
-def aggregate_hourly(df):
-    """
-    Агрегирует данные по часу по колонкам timestamp, url, status.
-    Применяет маскирование URL перед группировкой.
-    Возвращает DataFrame с колонками:
-      hour, url, status, count
-    """
+def prepare_hourly_data(input_file, output_file=None):
+    """Агрегирует данные из CSV файла по часам по полям timestamp, request_method, request_uri, status."""
+    df = read_csv_file(input_file)
+    df = filter_sources(df)
+    df = filter_requests(df)
+    return prepare_hourly_data_from_df(df, output_file)
+
+def prepare_hourly_data_from_df(df, output_file=None):
+    """Агрегирует данные из DataFrame по часам по полям timestamp, request_method, request_uri, status."""
     # Копируем, чтобы не изменять исходный DataFrame
     df_agg = df[['timestamp', 'request_method', 'request_uri', 'status']].copy()
     # Маскируем request_uri
@@ -68,14 +70,19 @@ def aggregate_hourly(df):
     df_agg['timestamp'] = pd.to_datetime(df_agg['timestamp'], errors='coerce')
     df_agg['hour'] = df_agg['timestamp'].dt.floor('h')
     # Группируем и считаем количество
-    grouped = (
+    aggregated = (
         df_agg
         .groupby(['hour', 'url', 'status'])
         .size()
         .reset_index(name='count')
     )
-    grouped['status'] = grouped['status'].astype('Int64')
-    return grouped
+    aggregated['status'] = aggregated['status'].astype('Int64')
+
+    if output_file:
+        aggregated.to_csv(output_file, sep=';', decimal=',', index=False)
+        print(f"Агрегированные данные сохранены в: {output_file}")
+
+    return aggregated
 
 def count_unique_sources(df):
     """Возвращает таблицу с уникальными значениями и их количеством."""
@@ -88,10 +95,8 @@ def create_influx_points(hourly_data):
 CSV_FILE = 'data/nginx_row_data.csv'
 
 def main():
-
+    # Шаг 1: Чтение и подсчет уникальных значений source
     df = read_csv_file(CSV_FILE)
-
-    # Шаг 1: Подсчет уникальных значений source
     sources_table = count_unique_sources(df)
     print("Таблица уникальных значений source и их количество (до фильтрации):")
     print(sources_table)
@@ -105,15 +110,8 @@ def main():
     # Шаг 3: Фильтрация по запросам (requests)
     df_filtered = filter_requests(df_filtered)
 
-    # Шаг 4: Агрегация по часу
-    df_hourly = aggregate_hourly(df_filtered)
-    df_hourly.to_csv(
-        'artifacts/hourly_aggregated.csv',
-        sep=';',
-        decimal=',',
-        index=False
-    )
-    print("\nАгрегированные данные по часу сохранены в artifacts/hourly_aggregated.csv")
+    # Шаг 4: Агрегация по часу с предварительно отфильтрованными данными
+    df_hourly = prepare_hourly_data_from_df(df_filtered, 'artifacts/hourly_aggregated.csv')
 
     # Шаг 5: Сбор уникальных URL и их количества запросов
     url_counts = (
@@ -139,7 +137,7 @@ def main():
     print("\nИтоговый DataFrame сохранён в Excel: artifacts/unique_urls.xlsx")
 
     # Шаг 6: Сбор статистики по Import и Export (для определения размера файлов)
-    df_import = filter_by_keywords(df_filtered, ['import', 'export'])
+    df_import = filter_by_keywords(df, ['import', 'export'])
     print("\nТаблица import/export (только строки с 'import' или 'export' в request_uri) - Done")
     # Явно задаем тип decimal для указанных колонок
     decimal_cols = ['upstream_connect_time', 'upstream_response_time', 'request_time']
